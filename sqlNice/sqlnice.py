@@ -12,6 +12,12 @@ class SqlNice(object):
         self.columns_by_tables = self.get_tables_schemas()
         self.table_list_obj = {}
 
+    def create_table(self, table_name, columns, types=None):
+        pass
+
+    def drop_table(self, table_name):
+        pass
+
     def get_tables_names(self):
         """
         Take the tables inside the sqlite3 db

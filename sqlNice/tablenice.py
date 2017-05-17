@@ -39,6 +39,9 @@ class TableNice(object):
         """
         pass
 
+    def insert(self, *values):
+        pass
+
     def __str__(self):
         # TODO: Need to change the query building process, NEVER MOCKED
         self.cursor.execute('SELECT ' + self.strfy_columns +
