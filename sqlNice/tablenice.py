@@ -9,6 +9,7 @@ class TableNice(object):
         self.cursor = self.connection.cursor()
 
         self.strfy_columns = ', '.join(self.columns)
+        self.query = []
 
     @staticmethod
     def justfy_list(list_of_rows, list_of_widths, fill, separtor_char='|'):
@@ -27,6 +28,9 @@ class TableNice(object):
 
         return output_table
 
+    def execute_query(self):
+        self.cursor.execute(' '.join(self.query))
+
     def __getitem__(self, itens):
         columns = [col for col in itens if col in self.columns]
         return TableNice(self.table_name, columns, self.connection)
@@ -42,8 +46,19 @@ class TableNice(object):
     def insert(self, *values):
         pass
 
+    def select(self, *cols):
+        self.query.append('SELECT')
+        if not cols:
+            self.query.append('*')
+        else:
+            columns_selected = ', '.join([col for col in cols if col in self.columns])
+            self.query.append(columns_selected)
+        self.query.append('FROM')
+        self.query.append(self.table_name)
+
     def __str__(self):
         # TODO: Need to change the query building process, NEVER MOCKED
+        self.query.append('LIMIT 20')
         self.cursor.execute('SELECT ' + self.strfy_columns +
                             ' FROM ' + self.table_name + ' LIMIT 20')
         list_of_rows = self.cursor.fetchall()

@@ -25,7 +25,7 @@ class SqlNice(object):
         List of tables names
         """
         res = self.conn.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        return [name[0] for name in res]
+        return [str(name[0]) for name in res]
 
     def get_columns_names(self, table_name):
         """
