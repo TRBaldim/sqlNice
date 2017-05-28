@@ -4,13 +4,18 @@ import sqlite3
 from .tablenice import TableNice
 
 
-class SqlNice(object):
+class SqlNice(object, sqlite3):
     def __init__(self, sqlite_path_db):
-        self.conn = sqlite3.connect(sqlite_path_db)
+        # Connection is automatic during the contructor
+        self.conn = self.connect(sqlite_path_db)
+
         self.cursor = self.conn.cursor()
         self.table_list_names = self.get_tables_names()
         self.columns_by_tables = self.get_tables_schemas()
         self.table_list_obj = {}
+
+    def close(self):
+        self.conn.close()
 
     def create_table(self, table_name, columns, types=None):
         pass
