@@ -17,6 +17,11 @@ class SqlNice(object, sqlite3):
     def close(self):
         self.conn.close()
 
+    def commit(self):
+        # TODO: Add a control to find if has anything to commit
+        # https://trello.com/c/8wahdvLz/48-checking-queries-before-commit
+        self.conn.commit()
+
     def create_table(self, table_name, columns, types=None):
         pass
 
