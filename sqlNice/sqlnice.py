@@ -8,7 +8,6 @@ class SqlNice(object, sqlite3):
     def __init__(self, sqlite_path_db):
         # Connection is automatic during the contructor
         self.conn = self.connect(sqlite_path_db)
-
         self.cursor = self.conn.cursor()
         self.table_list_names = self.get_tables_names()
         self.columns_by_tables = self.get_tables_schemas()
@@ -26,6 +25,9 @@ class SqlNice(object, sqlite3):
     def rollback(self):
         # TODO: Add the same control of queries to rollback
         self.conn.rollback()
+
+    def cursor(self):
+        return self.cursor
 
     def create_table(self, table_name, columns, types=None):
         pass
