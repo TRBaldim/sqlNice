@@ -64,3 +64,6 @@ class SqlNice(object, sqlite3):
                 raise Exception('The table ' + str(item) + ' doesn\'t belong to this database')
             self.table_list_obj[item] = t
             return self.table_list_obj[item]
+
+    def __del__(self):
+        self.close()
