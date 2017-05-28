@@ -15,12 +15,17 @@ class SqlNice(object, sqlite3):
         self.table_list_obj = {}
 
     def close(self):
+        self.rollback()
         self.conn.close()
 
     def commit(self):
         # TODO: Add a control to find if has anything to commit
         # https://trello.com/c/8wahdvLz/48-checking-queries-before-commit
         self.conn.commit()
+
+    def rollback(self):
+        # TODO: Add the same control of queries to rollback
+        self.conn.rollback()
 
     def create_table(self, table_name, columns, types=None):
         pass
