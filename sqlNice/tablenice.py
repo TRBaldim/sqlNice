@@ -10,6 +10,7 @@ class TableNice(object):
 
         self.strfy_columns = ', '.join(self.columns)
         self.query = []
+        self.query_statements = []
 
     @staticmethod
     def justfy_list(list_of_rows, list_of_widths, fill, separtor_char='|'):
@@ -28,12 +29,20 @@ class TableNice(object):
 
         return output_table
 
+    def check_statement(self, statement):
+        """
+        Return if the statement is already in query or not.
+        :param statement: Statement Name
+        :return: boolean
+        """
+        return True if statement in self.query_statements else False
+
     def execute_query(self):
         self.cursor.execute(' '.join(self.query))
 
     def __getitem__(self, itens):
         columns = [col for col in itens if col in self.columns]
-        return TableNice(self.table_name, columns, self.connection)
+        return self.select(*columns)
 
     def count(self):
         """
@@ -52,18 +61,28 @@ class TableNice(object):
         :param cols: need to be the columns added to the function
         :return: None
         """
-        self.query.append('SELECT')
+        statement = 'SELECT'
+
+        if self.check_statement(statement):
+            raise Exception('SELECT Statement already in use. \n'
+                            'Use a clear query method to run the statement')
+
+        self.query_statements.append(statement)
+        self.query.append(statement)
+
         if not cols:
             self.query.append('*')
         else:
-            columns_selected = ', '.join([col for col in cols if col in self.columns])
-            self.query.append(columns_selected)
+            [self.query.append(col) for col in cols if col in self.columns]
         self.query.append('FROM')
         self.query.append(self.table_name)
+        return self
 
     def __str__(self, limit=20):
-        self.query.append('LIMIT ' + str(limit))
-        self.cursor.execute(' '.join(self.query))
+        if not self.check_statement('SELECT'):
+            self.select()
+        query = ' '.join(self.query + ['LIMIT ' + str(limit)])
+        self.cursor.execute(query)
         list_of_rows = self.cursor.fetchall()
         list_of_widths = []
 

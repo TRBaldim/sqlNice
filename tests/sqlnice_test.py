@@ -59,9 +59,9 @@ class TestCore(unittest.TestCase):
 
     def test_selected_cols(self):
         db_name = 'first_db.db'
-        columns_names_1 = ['DATE', 'ID']
+        query_result = ['SELECT', 'DATE', 'ID', 'FROM', 'TABLE_1']
         table_name_1 = 'TABLE_1'
 
-        table_obj = sqlnice.SqlNice(db_name)[table_name_1]['DATE', 'ID']
-
-        self.assertEqual(table_obj.columns, columns_names_1)
+        table_obj = sqlnice.SqlNice(db_name)[table_name_1]
+        table_obj = table_obj['DATE', 'ID']
+        self.assertEqual(table_obj.query, query_result)
