@@ -47,6 +47,11 @@ class TableNice(object):
         pass
 
     def select(self, *cols):
+        """
+        SELECT clause that build the main and first statement of the query.
+        :param cols: need to be the columns added to the function
+        :return: None
+        """
         self.query.append('SELECT')
         if not cols:
             self.query.append('*')
@@ -56,11 +61,9 @@ class TableNice(object):
         self.query.append('FROM')
         self.query.append(self.table_name)
 
-    def __str__(self):
-        # TODO: Need to change the query building process, NEVER MOCKED
-        self.query.append('LIMIT 20')
-        self.cursor.execute('SELECT ' + self.strfy_columns +
-                            ' FROM ' + self.table_name + ' LIMIT 20')
+    def __str__(self, limit=20):
+        self.query.append('LIMIT ' + str(limit))
+        self.cursor.execute(' '.join(self.query))
         list_of_rows = self.cursor.fetchall()
         list_of_widths = []
 
