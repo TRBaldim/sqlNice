@@ -73,15 +73,26 @@ class TableNice(object):
         if not cols:
             self.query.append('*')
         else:
-            [self.query.append(col) for col in cols if col in self.columns]
+            columns_selected = ', '.join([col for col in cols if col in self.columns])
+            self.query.append(columns_selected)
         self.query.append('FROM')
         self.query.append(self.table_name)
         return self
 
+    def build_query_str(self):
+        return ' '.join(self.query)
+
+    def execute(self):
+        self.cursor.execute(self.build_query_str())
+        self.query = []
+        self.query_statements = []
+
     def __str__(self, limit=20):
         if not self.check_statement('SELECT'):
-            self.select()
-        query = ' '.join(self.query + ['LIMIT ' + str(limit)])
+            query = 'SELECT * FROM ' + self.table_name + ' LIMIT ' + str(limit)
+        else:
+            query = ' '.join(self.query + ['LIMIT ' + str(limit)])
+        print(query)
         self.cursor.execute(query)
         list_of_rows = self.cursor.fetchall()
         list_of_widths = []

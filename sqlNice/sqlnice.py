@@ -59,3 +59,6 @@ class SqlNice(object):
                 raise Exception('The table ' + str(item) + ' doesn\'t belong to this database')
             self.table_list_obj[item] = t
             return self.table_list_obj[item]
+
+    def commit(self):
+        self.conn.commit()
