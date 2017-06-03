@@ -6,11 +6,28 @@ from .tablenice import TableNice
 
 class SqlNice(object):
     def __init__(self, sqlite_path_db):
+        # Connection is automatic during the contructor
         self.conn = sqlite3.connect(sqlite_path_db)
         self.cursor = self.conn.cursor()
         self.table_list_names = self.get_tables_names()
         self.columns_by_tables = self.get_tables_schemas()
         self.table_list_obj = {}
+
+    def close(self):
+        self.rollback()
+        self.conn.close()
+
+    def commit(self):
+        # TODO: Add a control to find if has anything to commit
+        # https://trello.com/c/8wahdvLz/48-checking-queries-before-commit
+        self.conn.commit()
+
+    def rollback(self):
+        # TODO: Add the same control of queries to rollback
+        self.conn.rollback()
+
+    def cursor(self):
+        return self.cursor
 
     def create_table(self, table_name, columns, types=None):
         pass
@@ -60,5 +77,5 @@ class SqlNice(object):
             self.table_list_obj[item] = t
             return self.table_list_obj[item]
 
-    def commit(self):
-        self.conn.commit()
+    #def __del__(self):
+    #    self.close()
