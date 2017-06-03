@@ -63,7 +63,7 @@ class TestCore(unittest.TestCase):
         table_name_1 = 'TABLE_1'
 
         table_obj = sqlnice.SqlNice(db_name)[table_name_1]
-        table_obj = table_obj['DATE', 'ID']
+        table_obj = table_obj.select('DATE', 'ID')
         self.assertEqual(table_obj.query, query_result)
 
     def test_execute_method(self):
@@ -72,6 +72,6 @@ class TestCore(unittest.TestCase):
         table_name_1 = 'TABLE_1'
 
         table_obj = sqlnice.SqlNice(db_name)[table_name_1]
-        table_obj = table_obj['DATE', 'ID']
+        table_obj = table_obj.select('DATE', 'ID')
         table_obj.execute()
         self.assertEqual(table_obj.query, query_result)

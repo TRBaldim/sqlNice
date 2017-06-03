@@ -1,3 +1,4 @@
+from columnnice import ColumnNice
 
 
 class TableNice(object):
@@ -40,9 +41,8 @@ class TableNice(object):
     def execute_query(self):
         self.cursor.execute(' '.join(self.query))
 
-    def __getitem__(self, itens):
-        columns = [col for col in itens if col in self.columns]
-        return self.select(*columns)
+    def __getitem__(self, col):
+        return ColumnNice(col)
 
     def count(self):
         """
