@@ -75,3 +75,7 @@ class TestCore(unittest.TestCase):
         table_obj = table_obj['DATE', 'ID']
         table_obj.execute()
         self.assertEqual(table_obj.query, query_result)
+
+
+if __name__ == '__main__':
+    unittest.main()
