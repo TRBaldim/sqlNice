@@ -10,6 +10,7 @@ class TableNice(object):
 
         self.strfy_columns = ', '.join(self.columns)
         self.query = []
+        self.query_statements = []
 
     @staticmethod
     def justfy_list(list_of_rows, list_of_widths, fill, separtor_char='|'):
@@ -28,12 +29,20 @@ class TableNice(object):
 
         return output_table
 
+    def check_statement(self, statement):
+        """
+        Return if the statement is already in query or not.
+        :param statement: Statement Name
+        :return: boolean
+        """
+        return True if statement in self.query_statements else False
+
     def execute_query(self):
         self.cursor.execute(' '.join(self.query))
 
     def __getitem__(self, itens):
         columns = [col for col in itens if col in self.columns]
-        return TableNice(self.table_name, columns, self.connection)
+        return self.select(*columns)
 
     def count(self):
         """
@@ -47,7 +56,20 @@ class TableNice(object):
         pass
 
     def select(self, *cols):
-        self.query.append('SELECT')
+        """
+        SELECT clause that build the main and first statement of the query.
+        :param cols: need to be the columns added to the function
+        :return: None
+        """
+        statement = 'SELECT'
+
+        if self.check_statement(statement):
+            raise Exception('SELECT Statement already in use. \n'
+                            'Use a clear query method to run the statement')
+
+        self.query_statements.append(statement)
+        self.query.append(statement)
+
         if not cols:
             self.query.append('*')
         else:
@@ -55,12 +77,23 @@ class TableNice(object):
             self.query.append(columns_selected)
         self.query.append('FROM')
         self.query.append(self.table_name)
+        return self
 
-    def __str__(self):
-        # TODO: Need to change the query building process, NEVER MOCKED
-        self.query.append('LIMIT 20')
-        self.cursor.execute('SELECT ' + self.strfy_columns +
-                            ' FROM ' + self.table_name + ' LIMIT 20')
+    def build_query_str(self):
+        return ' '.join(self.query)
+
+    def execute(self):
+        self.cursor.execute(self.build_query_str())
+        self.query = []
+        self.query_statements = []
+
+    def __str__(self, limit=20):
+        if not self.check_statement('SELECT'):
+            query = 'SELECT * FROM ' + self.table_name + ' LIMIT ' + str(limit)
+        else:
+            query = ' '.join(self.query + ['LIMIT ' + str(limit)])
+        print(query)
+        self.cursor.execute(query)
         list_of_rows = self.cursor.fetchall()
         list_of_widths = []
 

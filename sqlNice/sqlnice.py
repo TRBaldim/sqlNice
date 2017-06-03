@@ -77,5 +77,8 @@ class SqlNice(object, sqlite3):
             self.table_list_obj[item] = t
             return self.table_list_obj[item]
 
+    def commit(self):
+        self.conn.commit()
+
     def __del__(self):
         self.close()
