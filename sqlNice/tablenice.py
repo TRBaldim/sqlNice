@@ -79,6 +79,25 @@ class TableNice(object):
         self.query.append(self.table_name)
         return self
 
+    def where(self, operation):
+        statement = 'WHERE'
+
+        if self.check_statement(statement):
+            raise Exception('SELECT Statement already in use. \n'
+                            'Use a clear query method to run the statement')
+
+        self.query_statements.append(statement)
+
+        # Checking if has SELECT before Where
+        if self.check_statement('SELECT'):
+            self.query.append(statement)
+        else:
+            raise Exception('WHERE without SELECT')
+
+        self.query.append(operation)
+
+        return self
+
     def build_query_str(self):
         return ' '.join(self.query)
 
