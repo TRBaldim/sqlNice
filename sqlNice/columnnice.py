@@ -80,13 +80,17 @@ class ColumnNice(object):
         self.operation = str(self) + ' >= ' + str(other)
         return self
 
-    def __contains__(self, item):
+    def is_in(self, items):
         """
         this in other
-        :param item:
+        :param items:
         :return:
         """
-        pass
+        if not hasattr(items, '__iter__'):
+            raise TypeError('Object ' + type(items).__name__ + ' is not Iterable')
+        casted_items = map(lambda elem: str(elem) if type(elem) != str else '\"' + str(elem) + '\"', items)
+        self.operation = str(self) + ' IN (' + ', '.join(elem for elem in casted_items) + ')'
+        return self
 
     def __and__(self, other):
         self.operation += ' AND ' + other.operation

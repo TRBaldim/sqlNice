@@ -79,7 +79,7 @@ class TableNice(object):
         self.query.append(self.table_name)
         return self
 
-    def where(self, operation):
+    def where(self, where_statement_operation):
         statement = 'WHERE'
 
         if self.check_statement(statement):
@@ -94,7 +94,7 @@ class TableNice(object):
         else:
             raise Exception('WHERE without SELECT')
 
-        self.query.append(operation.operation)
+        self.query.append(where_statement_operation.operation)
 
         return self
 
