@@ -83,22 +83,40 @@ class ColumnNice(object):
     def is_in(self, items):
         """
         this in other
-        :param items:
+        :param items: should be a iterable object
         :return:
         """
         if not hasattr(items, '__iter__'):
             raise TypeError('Object ' + type(items).__name__ + ' is not Iterable')
+        # fixing strings to ran at sqlite
         casted_items = map(lambda elem: str(elem) if type(elem) != str else '\"' + str(elem) + '\"', items)
+
         self.operation = str(self) + ' IN (' + ', '.join(elem for elem in casted_items) + ')'
         return self
 
     def __and__(self, other):
+        """
+        this and other
+        :param other: Should be a columnNice object
+        :return:
+        """
         self.operation += ' AND ' + other.operation
         return self
 
     def __or__(self, other):
+        """
+        this or other
+        :param other: Should be a columnNice object
+        :return:
+        """
         self.operation += ' OR ' + other.operation
         return self
 
     def like(self, other):
-        pass
+        """
+        this like other
+        :param other: other should be a string object
+        :return:
+        """
+        self.operation = str(self) + ' LIKE \"%' + str(other) + '%\"'
+        return self

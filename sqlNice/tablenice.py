@@ -8,7 +8,7 @@ class TableNice(object):
         self.columns = columns
         self.connection = connection
         self.cursor = self.connection.cursor()
-
+        self.columns_selected = []
         self.strfy_columns = ', '.join(self.columns)
         self.query = []
         self.query_statements = []
@@ -73,8 +73,8 @@ class TableNice(object):
         if not cols:
             self.query.append('*')
         else:
-            columns_selected = ', '.join([col for col in cols if col in self.columns])
-            self.query.append(columns_selected)
+            self.columns_selected = [col for col in cols if col in self.columns]
+            self.query.append(','.join(self.columns_selected))
         self.query.append('FROM')
         self.query.append(self.table_name)
         return self
@@ -105,10 +105,12 @@ class TableNice(object):
         self.cursor.execute(self.build_query_str())
         self.query = []
         self.query_statements = []
+        self.columns_selected = []
 
     def __str__(self, limit=20):
         if not self.check_statement('SELECT'):
             query = 'SELECT * FROM ' + self.table_name + ' LIMIT ' + str(limit)
+            self.columns_selected = self.columns
         else:
             query = ' '.join(self.query + ['LIMIT ' + str(limit)])
 
@@ -117,15 +119,19 @@ class TableNice(object):
         list_of_widths = []
 
         # Iterate to check largest char in each row
-        for col_val, col_name in zip(list_of_rows[0], self.columns):
-            len_name = len(str(col_name))
-            len_val = len(str(col_val))
-            list_of_widths.append(len_name if len_name > len_val else len_val)
-
+        if len(list_of_rows) != 0:
+            for col_val, col_name in zip(list_of_rows[0], self.columns_selected):
+                len_name = len(str(col_name))
+                len_val = len(str(col_val))
+                list_of_widths.append(len_name if len_name > len_val else len_val)
+        else:
+            for col_name in self.columns_selected:
+                len_name = len(str(col_name))
+                list_of_widths.append(len_name)
         # Justfy the elements
-        separator = self.justfy_list([['' for _ in self.columns]], list_of_widths, '-', '+')
+        separator = self.justfy_list([['' for _ in self.columns_selected]], list_of_widths, '-', '+')
         output_rows = self.justfy_list(list_of_rows, list_of_widths, ' ')
-        output_header = self.justfy_list([self.columns], list_of_widths, ' ')
+        output_header = self.justfy_list([self.columns_selected], list_of_widths, ' ')
 
         # Build the structure of elements
         output_rows.insert(0, separator[0])

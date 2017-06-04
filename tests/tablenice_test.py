@@ -131,3 +131,15 @@ class TestTableNice(unittest.TestCase):
         table_obj = table_obj.select('ID', 'AMOUNT').where((table_obj['AMOUNT'] >= 1000) |
                                                            (table_obj['AMOUNT'] <= 5000))
         self.assertEqual(table_obj.query, query_result)
+
+    def test_where_clause_in(self):
+        db_name = 'first_db.db'
+        query_result = ['SELECT', 'ID, AMOUNT', 'FROM', 'TABLE_1', 'WHERE', 'AMOUNT IN (14.0, 20252.0)']
+        table_name_1 = 'TABLE_1'
+        table_list = ['TABLE_1', 'TABLE_2']
+
+        build_databases(db_name, table_list)
+
+        table_obj = sqlnice.SqlNice(db_name)[table_name_1]
+        table_obj = table_obj.select('ID', 'AMOUNT').where(table_obj['AMOUNT'].is_in([14.0, 20252.0]))
+        self.assertEqual(table_obj.query, query_result)
