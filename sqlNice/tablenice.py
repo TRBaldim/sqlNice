@@ -74,7 +74,7 @@ class TableNice(object):
             self.query.append('*')
         else:
             self.columns_selected = [col for col in cols if col in self.columns]
-            self.query.append(','.join(self.columns_selected))
+            self.query.append(', '.join(self.columns_selected))
         self.query.append('FROM')
         self.query.append(self.table_name)
         return self
