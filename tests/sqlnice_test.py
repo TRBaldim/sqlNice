@@ -1,16 +1,11 @@
 import unittest
-from .generate_tables import create_tabletest_table
+
 from sqlNice import sqlnice
 from sqlNice.tablenice import TableNice
+from tests.test_lib.generate_tables import *
 
 
-def build_databases(db_name, table_list):
-    # creating the test table, to tests
-    create_tabletest_table(db_name, table_list[0])
-    create_tabletest_table(db_name, table_list[1])
-
-
-class TestCore(unittest.TestCase):
+class TestSqlNice(unittest.TestCase):
 
     def test_get_table_list(self):
         db_name = 'first_db.db'
@@ -67,32 +62,6 @@ class TestCore(unittest.TestCase):
         table_obj = sqlnice.SqlNice(db_name)[table_name_1]
 
         self.assertEqual(table_obj.columns, columns_names_1)
-
-    def test_selected_cols(self):
-        db_name = 'first_db.db'
-        query_result = ['SELECT', 'DATE, ID', 'FROM', 'TABLE_1']
-        table_name_1 = 'TABLE_1'
-        table_list = ['TABLE_1', 'TABLE_2']
-
-        build_databases(db_name, table_list)
-
-        table_obj = sqlnice.SqlNice(db_name)[table_name_1]
-        table_obj = table_obj['DATE', 'ID']
-        self.assertEqual(table_obj.query, query_result)
-
-    def test_execute_method(self):
-        db_name = 'first_db.db'
-        query_result = []
-        table_name_1 = 'TABLE_1'
-        table_list = ['TABLE_1', 'TABLE_2']
-
-        build_databases(db_name, table_list)
-
-        table_obj = sqlnice.SqlNice(db_name)[table_name_1]
-        table_obj = table_obj['DATE', 'ID']
-        table_obj.execute()
-        self.assertEqual(table_obj.query, query_result)
-
 
 if __name__ == '__main__':
     unittest.main()

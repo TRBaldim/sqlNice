@@ -1,7 +1,12 @@
 import sqlite3
 import numpy as np
-from .test_lib import basic_lib_tests
+from tests.test_lib import basic_lib_tests
 
+
+def build_databases(db_name, table_list):
+    # creating the test table, to tests
+    create_tabletest_table(db_name, table_list[0])
+    create_tabletest_table(db_name, table_list[1])
 
 def create_tabletest_table(db_name, table_name):
 
