@@ -94,7 +94,7 @@ class TableNice(object):
         else:
             raise Exception('WHERE without SELECT')
 
-        self.query.append(operation)
+        self.query.append(operation.operation)
 
         return self
 
@@ -111,7 +111,7 @@ class TableNice(object):
             query = 'SELECT * FROM ' + self.table_name + ' LIMIT ' + str(limit)
         else:
             query = ' '.join(self.query + ['LIMIT ' + str(limit)])
-        print(query)
+
         self.cursor.execute(query)
         list_of_rows = self.cursor.fetchall()
         list_of_widths = []
