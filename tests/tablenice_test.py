@@ -177,3 +177,14 @@ class TestTableNice(unittest.TestCase):
         table_obj = sqlnice.SqlNice(db_name)[table_name_1]
         table_obj = table_obj.select('ID', 'AMOUNT').limit(10).distinct()
         self.assertEqual(table_obj.query, query_result)
+
+    def test_order_by(self):
+        db_name = 'first_db.db'
+        query_result = ['SELECT', 'DISTINCT', 'ID, AMOUNT', 'FROM', 'TABLE_1', 'ORDER BY', 'AMOUNT', 'LIMIT', '10']
+        table_name_1 = 'TABLE_1'
+        table_list = ['TABLE_1', 'TABLE_2']
+
+        build_databases(db_name, table_list)
+        table_obj = sqlnice.SqlNice(db_name)[table_name_1]
+        table_obj = table_obj.select('ID', 'AMOUNT').order_by(table_obj['AMOUNT']).limit(10).distinct()
+        self.assertEqual(table_obj.query, query_result)

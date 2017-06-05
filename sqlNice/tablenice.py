@@ -164,6 +164,23 @@ class TableNice(object):
             raise Exception('DISTINCT without SELECT')
         return self
 
+    def order_by(self, *columns):
+        statement = 'ORDER BY'
+
+        if self.check_statement(statement):
+            raise Exception('ORDER BY Statement already in use. \n'
+                            'Use a clear query method to run the statement')
+
+        self.query_statements.append(statement)
+
+        # Checking if has SELECT before Where
+        if self.check_statement('SELECT'):
+            self.query.append('ORDER BY')
+            self.query.append(', '.join([str(col) for col in columns]))
+        else:
+            raise Exception('ORDER BY without SELECT')
+        return self
+
     def __str__(self):
         if not self.check_statement('SELECT'):
             query = 'SELECT * FROM ' + self.table_name + ' LIMIT  20'
