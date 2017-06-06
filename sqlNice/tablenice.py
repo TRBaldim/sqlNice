@@ -15,7 +15,13 @@ class TableNice(object):
 
     @staticmethod
     def justfy_list(list_of_rows, list_of_widths, fill, separtor_char='|'):
-
+        """
+        :param list_of_rows:
+        :param list_of_widths:
+        :param fill:
+        :param separtor_char:
+        :return:
+        """
         output_table = []
 
         for row in list_of_rows:
@@ -80,10 +86,14 @@ class TableNice(object):
         return self
 
     def where(self, where_statement_operation):
+        """
+        :param where_statement_operation:
+        :return:
+        """
         statement = 'WHERE'
 
         if self.check_statement(statement):
-            raise Exception('SELECT Statement already in use. \n'
+            raise Exception('WHERE Statement already in use. \n'
                             'Use a clear query method to run the statement')
 
         self.query_statements.append(statement)
@@ -99,20 +109,84 @@ class TableNice(object):
         return self
 
     def build_query_str(self):
+        """
+        :return:
+        """
         return ' '.join(self.query)
 
     def execute(self):
+        """
+        :return:
+        """
         self.cursor.execute(self.build_query_str())
         self.query = []
         self.query_statements = []
         self.columns_selected = []
 
-    def __str__(self, limit=20):
+    def limit(self, limit=20):
+        """
+        :param limit:
+        :return:
+        """
+        statement = 'LIMIT'
+
+        if self.check_statement(statement):
+            raise Exception('LIMIT Statement already in use. \n'
+                            'Use a clear query method to run the statement')
+
+        self.query_statements.append(statement)
+
+        # Checking if has SELECT before Where
+        if self.check_statement('SELECT'):
+            self.query.append('LIMIT')
+            self.query.append(str(limit))
+        else:
+            raise Exception('LIMIT without SELECT')
+
+        return self
+
+    def distinct(self):
+        """
+        :return:
+        """
+        statement = 'DISTINCT'
+
+        if self.check_statement(statement):
+            raise Exception('DISTINCT Statement already in use. \n'
+                            'Use a clear query method to run the statement')
+
+        self.query_statements.append(statement)
+
+        # Checking if has SELECT before Where
+        if self.check_statement('SELECT'):
+            self.query.insert(1, 'DISTINCT')
+        else:
+            raise Exception('DISTINCT without SELECT')
+        return self
+
+    def order_by(self, *columns):
+        statement = 'ORDER BY'
+
+        if self.check_statement(statement):
+            raise Exception('ORDER BY Statement already in use. \n'
+                            'Use a clear query method to run the statement')
+
+        self.query_statements.append(statement)
+
+        # Checking if has SELECT before Where
+        if self.check_statement('SELECT'):
+            self.query.append('ORDER BY')
+            self.query.append(', '.join([str(col) for col in columns]))
+        else:
+            raise Exception('ORDER BY without SELECT')
+        return self
+
+    def __str__(self):
         if not self.check_statement('SELECT'):
-            query = 'SELECT * FROM ' + self.table_name + ' LIMIT ' + str(limit)
+            query = 'SELECT * FROM ' + self.table_name + ' LIMIT  20'
             self.columns_selected = self.columns
         else:
-            query = ' '.join(self.query + ['LIMIT ' + str(limit)])
+            query = ' '.join(self.query)
 
         self.cursor.execute(query)
         list_of_rows = self.cursor.fetchall()
