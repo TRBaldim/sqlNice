@@ -1,4 +1,5 @@
 from columnnice import ColumnNice
+import sqlite3
 
 
 class TableNice(object):
@@ -36,6 +37,16 @@ class TableNice(object):
 
         return output_table
 
+    @staticmethod
+    def build_insert_values(values):
+        out_list = []
+        for elem in values:
+            if isinstance(elem, str):
+                out_list.append('\"' + str(elem) + '\"')
+            else:
+                out_list.append(str(elem))
+        return "(" + ', '.join(out_list) + ")"
+
     def check_statement(self, statement):
         """
         Return if the statement is already in query or not.
@@ -59,7 +70,23 @@ class TableNice(object):
         pass
 
     def insert(self, *values):
-        pass
+        if len(values) != len(self.columns):
+            raise IndexError('Columns not match')
+
+        statement = 'INSERT'
+
+        if self.check_statement('SELECT'):
+            raise Exception('SELECT Statement with INSERT is not allowed')
+
+        if self.check_statement(statement):
+            self.query.append(", " + self.build_insert_values(values))
+        else:
+            self.query.append('INSERT INTO ')
+            self.query.append(self.table_name)
+            self.query.append("(" + ', '.join(self.columns) + ")")
+            self.query.append("VALUES")
+            self.query.append(self.build_insert_values(values))
+        return self
 
     def select(self, *cols):
         """
@@ -78,6 +105,7 @@ class TableNice(object):
 
         if not cols:
             self.query.append('*')
+            self.columns_selected = self.columns
         else:
             self.columns_selected = [col for col in cols if col in self.columns]
             self.query.append(', '.join(self.columns_selected))
@@ -187,8 +215,12 @@ class TableNice(object):
             self.columns_selected = self.columns
         else:
             query = ' '.join(self.query)
+        try:
+            self.cursor.execute(query)
+        except sqlite3.OperationalError:
+            print(query)
+            raise
 
-        self.cursor.execute(query)
         list_of_rows = self.cursor.fetchall()
         list_of_widths = []
 
