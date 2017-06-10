@@ -39,3 +39,17 @@ The sqlNice will give you a nice view of responses, good for notebooks like Jupy
 |  Hadouken|20252.0|
 +----------+-------+
 ```
+Let's INSERT Something :D
+
+```
+my_table.insert('Josias Yeah', '1200.0').execute()
+my_db.commit()
+
+```
+
+Why not update?
+
+```
+my_table.update(name='Mano Brown').where(my_table['NAME'] == 'Josias Yeah').execute()
+my_db.commit()
+```
