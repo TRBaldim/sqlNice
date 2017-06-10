@@ -112,9 +112,9 @@ class TableNice(object):
             raise Exception('UPDATE Statement already in use')
 
         self.query_statements.append(statement)
-        self.query.append('UPDATE ')
+        self.query.append('UPDATE')
         self.query.append(self.table_name)
-        self.query.append(' SET ')
+        self.query.append('SET')
 
         col_usage_list = []
         for i in kwargs:
@@ -126,8 +126,25 @@ class TableNice(object):
         self.query.append(', '.join(col_usage_list))
         return self
 
+    def delete(self):
+        """
 
+        :return:
+        """
+        statement = 'UPDATE'
 
+        if self.check_statement('SELECT'):
+            raise Exception('SELECT Statement with UPDATE is not allowed')
+        elif self.check_statement('INSERT'):
+            raise Exception('INSERT Statement with UPDATE is not allowed')
+        elif self.check_statement(statement):
+            raise Exception('UPDATE Statement already in use')
+
+        self.query_statements.append(statement)
+        self.query.append('DELETE')
+        self.query.append('FROM')
+        self.query.append(self.table_name)
+        return self
 
     def select(self, *cols):
         """

@@ -188,3 +188,17 @@ class TestTableNice(unittest.TestCase):
         table_obj = sqlnice.SqlNice(db_name)[table_name_1]
         table_obj = table_obj.select('ID', 'AMOUNT').order_by(table_obj['AMOUNT']).limit(10).distinct()
         self.assertEqual(table_obj.query, query_result)
+
+    def test_delete(self):
+        db_name = 'first_db.db'
+        query_result = ['DELETE', 'FROM', 'TABLE_1', 'WHERE', 'AMOUNT > 1000']
+        table_name_1 = 'TABLE_1'
+        table_list = ['TABLE_1', 'TABLE_2']
+
+        build_databases(db_name, table_list)
+        table_obj = sqlnice.SqlNice(db_name)[table_name_1]
+        table_obj = table_obj.delete().where(table_obj['AMOUNT'] > 1000)
+        self.assertEqual(table_obj.query, query_result)
+
+if __name__ == '__main__':
+    unittest.main()
