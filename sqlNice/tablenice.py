@@ -70,12 +70,19 @@ class TableNice(object):
         pass
 
     def insert(self, *values):
+        """
+        INSERT should have the value for all columns, if a column has NULL should be added.
+        The order of the values should be taken from self.columns to see if the values are right.
+        :param values:
+        :return:
+        """
         if len(values) != len(self.columns):
             raise IndexError('Columns not match')
 
         statement = 'INSERT'
 
-        if self.check_statement('SELECT'):
+        if self.check_statement('SELECT') or \
+                self.check_statement('UPDATE'):
             raise Exception('SELECT Statement with INSERT is not allowed')
 
         if self.check_statement(statement):
@@ -87,6 +94,40 @@ class TableNice(object):
             self.query.append("VALUES")
             self.query.append(self.build_insert_values(values))
         return self
+
+    def update(self, **kwargs):
+        """
+        Update should be associate with each kind of values as kwargs
+        update(id=1234, name='jeremias')
+        :param kwargs:
+        :return:
+        """
+        statement = 'UPDATE'
+
+        if self.check_statement('SELECT'):
+            raise Exception('SELECT Statement with UPDATE is not allowed')
+        elif self.check_statement('INSERT'):
+            raise Exception('INSERT Statement with UPDATE is not allowed')
+        elif self.check_statement(statement):
+            raise Exception('UPDATE Statement already in use')
+
+        self.query_statements.append(statement)
+        self.query.append('UPDATE ')
+        self.query.append(self.table_name)
+        self.query.append(' SET ')
+
+        col_usage_list = []
+        for i in kwargs:
+            if isinstance(kwargs[i], str):
+                col_usage_list.append(str(i.upper()) + ' = \"' + kwargs[i] + '\"')
+            else:
+                col_usage_list.append(str(i.upper()) + ' =  ' + str(kwargs[i]))
+
+        self.query.append(', '.join(col_usage_list))
+        return self
+
+
+
 
     def select(self, *cols):
         """
@@ -128,6 +169,8 @@ class TableNice(object):
 
         # Checking if has SELECT before Where
         if self.check_statement('SELECT'):
+            self.query.append(statement)
+        elif self.check_statement('UPDATE'):
             self.query.append(statement)
         else:
             raise Exception('WHERE without SELECT')
@@ -218,8 +261,7 @@ class TableNice(object):
         try:
             self.cursor.execute(query)
         except sqlite3.OperationalError:
-            print(query)
-            raise
+            raise Exception('Error in query execution please see the query: ' + query)
 
         list_of_rows = self.cursor.fetchall()
         list_of_widths = []

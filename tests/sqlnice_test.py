@@ -101,6 +101,20 @@ class TestSqlNice(unittest.TestCase):
         ids = [elem[1] for elem in values]
         self.assertIn(np.random.choice(user_id_list), ids)
 
+    def test_update(self):
+        db_name = 'first_db.db'
+        table_name_1 = 'TABLE_1'
+        table_list = ['TABLE_1', 'TABLE_2']
+        build_databases(db_name, table_list)
+        db_object = sqlnice.SqlNice(db_name)
+        table_obj = db_object[table_name_1]
+
+        table_obj.update(name='AAAAA').where(table_obj['AMOUNT'] > 1000.0).execute()
+        db_object.commit()
+        table_obj.select().where(table_obj['NAME'] == 'AAAAA').execute()
+        values = table_obj.cursor.fetchall()
+        name = values[0][2]
+        self.assertEqual(name, 'AAAAA')
 
 if __name__ == '__main__':
     unittest.main()
