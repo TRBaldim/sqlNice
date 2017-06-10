@@ -61,6 +61,8 @@ class SqlNice(object):
         """
         return {table: self.get_columns_names(table) for table in self.table_list_names}
 
+
+
     def __getitem__(self, item):
         """
         Build the table object if it was requested.
@@ -76,6 +78,3 @@ class SqlNice(object):
                 raise Exception('The table ' + str(item) + ' doesn\'t belong to this database')
             self.table_list_obj[item] = t
             return self.table_list_obj[item]
-
-    #def __del__(self):
-    #    self.close()
