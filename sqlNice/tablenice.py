@@ -61,14 +61,6 @@ class TableNice(object):
     def __getitem__(self, col):
         return ColumnNice(col)
 
-    def count(self):
-        """
-        Count all elements of the actual table
-        :return:
-        Int with count
-        """
-        pass
-
     def insert(self, *values):
         """
         INSERT should have the value for all columns, if a column has NULL should be added.
