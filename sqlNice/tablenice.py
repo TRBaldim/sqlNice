@@ -263,6 +263,26 @@ class TableNice(object):
             raise Exception('DISTINCT without SELECT')
         return self
 
+    def desc(self):
+        statement = 'DESC'
+
+        if self.check_statement(statement):
+            raise Exception('DESC Statement already in use. \n'
+                            'Use a clear query method to run the statement')
+        self.query_statements.append(statement)
+        self.query.append(statement)
+        return self
+
+    def asc(self):
+        statement = 'ASC'
+
+        if self.check_statement(statement):
+            raise Exception('ASC Statement already in use. \n'
+                            'Use a clear query method to run the statement')
+        self.query_statements.append(statement)
+        self.query.append(statement)
+        return self
+
     def order_by(self, *columns):
         statement = 'ORDER BY'
 

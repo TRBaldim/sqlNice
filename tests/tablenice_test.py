@@ -190,6 +190,30 @@ class TestTableNice(unittest.TestCase):
         table_obj = table_obj.select('ID', 'AMOUNT').order_by(table_obj['AMOUNT']).limit(10).distinct()
         self.assertEqual(table_obj.query, query_result)
 
+    def test_desc(self):
+        db_name = 'first_db.db'
+        query_result = ['SELECT', 'DISTINCT', 'ID, AMOUNT', 'FROM',
+                        'TABLE_1', 'ORDER BY', 'AMOUNT', 'DESC', 'LIMIT', '10']
+        table_name_1 = 'TABLE_1'
+        table_list = ['TABLE_1', 'TABLE_2']
+
+        build_databases(db_name, table_list)
+        table_obj = sqlnice.SqlNice(db_name)[table_name_1]
+        table_obj = table_obj.select('ID', 'AMOUNT').order_by(table_obj['AMOUNT']).desc().limit(10).distinct()
+        self.assertEqual(table_obj.query, query_result)
+
+    def test_asc(self):
+        db_name = 'first_db.db'
+        query_result = ['SELECT', 'DISTINCT', 'ID, AMOUNT', 'FROM',
+                        'TABLE_1', 'ORDER BY', 'AMOUNT', 'ASC', 'LIMIT', '10']
+        table_name_1 = 'TABLE_1'
+        table_list = ['TABLE_1', 'TABLE_2']
+
+        build_databases(db_name, table_list)
+        table_obj = sqlnice.SqlNice(db_name)[table_name_1]
+        table_obj = table_obj.select('ID', 'AMOUNT').order_by(table_obj['AMOUNT']).asc().limit(10).distinct()
+        self.assertEqual(table_obj.query, query_result)
+
     def test_delete(self):
         db_name = 'first_db.db'
         query_result = ['DELETE', 'FROM', 'TABLE_1', 'WHERE', 'AMOUNT > 1000']
