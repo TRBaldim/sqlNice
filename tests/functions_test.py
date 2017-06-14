@@ -46,3 +46,4 @@ class TestFunctions(unittest.TestCase):
         query_result = ['SELECT', 'MIN(AMOUNT)', 'FROM', 'TABLE_1']
 
         self.assertEqual(query, query_result)
+

@@ -1,9 +1,10 @@
 
 
 class ColumnNice(object):
-    def __init__(self, column_name):
+    def __init__(self, column_name, table):
         self.name = column_name
         self.operation = None
+        self.table = table
 
     def __str__(self):
         return self.name

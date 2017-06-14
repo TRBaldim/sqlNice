@@ -1,6 +1,7 @@
 import unittest
 from tests.test_lib.generate_tables import *
 from sqlNice import sqlnice
+from sqlNice.functions import *
 
 
 class TestTableNice(unittest.TestCase):
@@ -199,6 +200,19 @@ class TestTableNice(unittest.TestCase):
         table_obj = sqlnice.SqlNice(db_name)[table_name_1]
         table_obj = table_obj.delete().where(table_obj['AMOUNT'] > 1000)
         self.assertEqual(table_obj.query, query_result)
+
+    def test_group_by(self):
+        db_name = 'first_db.db'
+        table_list = ['TABLE_1', 'TABLE_2']
+        build_databases(db_name, table_list)
+
+        test_obj = sqlnice.SqlNice(db_name)
+        table_obj = test_obj['TABLE_1']
+        query = table_obj.select(sum(table_obj['AMOUNT'])).group_by('NAME').query
+
+        query_result = ['SELECT', 'SUM(AMOUNT)', 'FROM', 'TABLE_1', 'GROUP BY', 'NAME']
+
+        self.assertEqual(query, query_result)
 
 if __name__ == '__main__':
     unittest.main()

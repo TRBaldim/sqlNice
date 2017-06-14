@@ -59,7 +59,7 @@ class TableNice(object):
         self.cursor.execute(' '.join(self.query))
 
     def __getitem__(self, col):
-        return ColumnNice(col)
+        return ColumnNice(col, self)
 
     def insert(self, *values):
         """
@@ -164,6 +164,22 @@ class TableNice(object):
             self.query.append(', '.join(self.columns_selected))
         self.query.append('FROM')
         self.query.append(self.table_name)
+        return self
+
+    def group_by(self, *cols):
+        statement = 'GROUP BY'
+
+        if self.check_statement(statement):
+            raise Exception('GROUP BY Statement already in use. \n'
+                            'Use a clear query method to run the statement')
+
+        self.query_statements.append(statement)
+        self.query.append(statement)
+
+        if not cols:
+            raise Exception('Unable to group by, need to have columns to Aggregate')
+        else:
+            self.query.append(', '.join(cols))
         return self
 
     def where(self, where_statement_operation):
