@@ -165,7 +165,10 @@ class TableNice(object):
             self.query.append('*')
             self.columns_selected = self.columns
         else:
-            self.columns_selected = [col for col in cols if col in self.columns]
+            # TODO: Build something that check the query in a better form
+            # https://trello.com/c/ry77XUGb/70-rebuild-the-handle-of-query-build
+            # self.columns_selected = [col for col in cols if col in self.columns]
+            self.columns_selected = cols
             self.query.append(', '.join(self.columns_selected))
         self.query.append('FROM')
         self.query.append(self.table_name)
