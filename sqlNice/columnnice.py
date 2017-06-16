@@ -1,12 +1,17 @@
 
 
 class ColumnNice(object):
-    def __init__(self, column_name):
+    def __init__(self, column_name, table):
         self.name = column_name
-        self.operation = None
+        self.representation = column_name
+        self.operation = []
+        self.table = table
 
     def __str__(self):
-        return self.name
+        return self.representation
+
+    def __repr__(self):
+        return self.representation
 
     def __lt__(self, other):
         """
@@ -17,7 +22,7 @@ class ColumnNice(object):
         if type(other) == str:
             other = "\"" + other + "\""
 
-        self.operation = str(self) + ' < ' + str(other)
+        self.operation.append(str(self) + ' < ' + str(other))
         return self
 
     def __le__(self, other):
@@ -29,7 +34,7 @@ class ColumnNice(object):
         if type(other) == str:
             other = "\"" + other + "\""
 
-        self.operation = str(self) + ' <= ' + str(other)
+        self.operation.append(str(self) + ' <= ' + str(other))
         return self
 
     def __eq__(self, other):
@@ -41,7 +46,7 @@ class ColumnNice(object):
         if type(other) == str:
             other = "\"" + other + "\""
 
-        self.operation = str(self) + ' == ' + str(other)
+        self.operation.append(str(self) + ' == ' + str(other))
         return self
 
     def __ne__(self, other):
@@ -53,7 +58,7 @@ class ColumnNice(object):
         if type(other) == str:
             other = "\"" + other + "\""
 
-        self.operation = str(self) + ' != ' + str(other)
+        self.operation.append(str(self) + ' != ' + str(other))
         return self
 
     def __gt__(self, other):
@@ -65,7 +70,7 @@ class ColumnNice(object):
         if type(other) == str:
             other = "\"" + other + "\""
 
-        self.operation = str(self) + ' > ' + str(other)
+        self.operation.append(str(self) + ' > ' + str(other))
         return self
 
     def __ge__(self, other):
@@ -77,7 +82,7 @@ class ColumnNice(object):
         if type(other) == str:
             other = "\"" + other + "\""
 
-        self.operation = str(self) + ' >= ' + str(other)
+        self.operation.append(str(self) + ' >= ' + str(other))
         return self
 
     def is_in(self, items):
@@ -91,7 +96,7 @@ class ColumnNice(object):
         # fixing strings to ran at sqlite
         casted_items = map(lambda elem: str(elem) if type(elem) != str else '\"' + str(elem) + '\"', items)
 
-        self.operation = str(self) + ' IN (' + ', '.join(elem for elem in casted_items) + ')'
+        self.operation.append(str(self) + ' IN (' + ', '.join(elem for elem in casted_items) + ')')
         return self
 
     def __and__(self, other):
@@ -100,7 +105,15 @@ class ColumnNice(object):
         :param other: Should be a columnNice object
         :return:
         """
-        self.operation += ' AND ' + other.operation
+        if other is self:
+            count_position = 1
+            while count_position <= len(self.operation):
+                if self.operation[count_position] != 'AND' and self.operation[count_position] != 'OR':
+                    self.operation.insert(count_position, 'AND')
+                    break
+                count_position += 2
+        else:
+            self.operation.append('AND')
         return self
 
     def __or__(self, other):
@@ -109,7 +122,15 @@ class ColumnNice(object):
         :param other: Should be a columnNice object
         :return:
         """
-        self.operation += ' OR ' + other.operation
+        if other is self:
+            count_position = 1
+            while count_position <= len(self.operation):
+                if self.operation[count_position] != 'AND' and self.operation[count_position] != 'OR':
+                    self.operation.insert(count_position, 'OR')
+                    break
+                count_position += 2
+        else:
+            self.operation.append('OR')
         return self
 
     def like(self, other):
@@ -118,5 +139,17 @@ class ColumnNice(object):
         :param other: other should be a string object
         :return:
         """
-        self.operation = str(self) + ' LIKE \"%' + str(other) + '%\"'
+        self.operation.append(str(self) + ' LIKE \"%' + str(other) + '%\"')
         return self
+
+    def alias(self, name):
+        self.name = name
+        self.representation += ' AS ' + name
+        return self
+
+    def set_function(self, function_string):
+        #self.name = function_string
+        self.representation = function_string
+
+    def restore_default_name(self):
+        self.representation = self.name
