@@ -6,11 +6,12 @@ class TableNice(object):
 
     def __init__(self, table_name, columns, connection):
         self.table_name = table_name
-        self.columns = columns
+        self.columns = [ColumnNice(col, self) for col in columns]
+        self.col_dict = {str(col): col for col in self.columns}
         self.connection = connection
         self.cursor = self.connection.cursor()
         self.columns_selected = []
-        self.strfy_columns = ', '.join(self.columns)
+        self.strfy_columns = ', '.join([str(col) for col in self.columns])
         self.query = []
         self.query_statements = []
 
@@ -47,6 +48,20 @@ class TableNice(object):
                 out_list.append(str(elem))
         return "(" + ', '.join(out_list) + ")"
 
+    def get_col_obj_by_name(self, cols):
+        """
+        Return the col object by string name
+        :param cols: List of name of cols or columns objects
+        :return: List of Columns objects
+        """
+        return_col_arr = []
+        for col in cols:
+            if isinstance(col, ColumnNice):
+                return_col_arr.append(col)
+            else:
+                return_col_arr.append(self.col_dict[col])
+        return return_col_arr
+
     def check_statement(self, statement):
         """
         Return if the statement is already in query or not.
@@ -59,7 +74,7 @@ class TableNice(object):
         self.cursor.execute(' '.join(self.query))
 
     def __getitem__(self, col):
-        return ColumnNice(col, self)
+        return self.col_dict[col]
 
     def insert(self, *values):
         """
@@ -82,7 +97,7 @@ class TableNice(object):
         else:
             self.query.append('INSERT INTO ')
             self.query.append(self.table_name)
-            self.query.append("(" + ', '.join(self.columns) + ")")
+            self.query.append("(" + ', '.join([str(col) for col in self.columns]) + ")")
             self.query.append("VALUES")
             self.query.append(self.build_insert_values(values))
         return self
@@ -160,8 +175,8 @@ class TableNice(object):
             # TODO: Build something that check the query in a better form
             # https://trello.com/c/ry77XUGb/70-rebuild-the-handle-of-query-build
             # self.columns_selected = [col for col in cols if col in self.columns]
-            self.columns_selected = cols
-            self.query.append(', '.join(self.columns_selected))
+            self.columns_selected = self.get_col_obj_by_name(cols)
+            self.query.append(', '.join([str(item) for item in self.columns_selected]))
         self.query.append('FROM')
         self.query.append(self.table_name)
         return self
@@ -179,7 +194,7 @@ class TableNice(object):
         if not cols:
             raise Exception('Unable to group by, need to have columns to Aggregate')
         else:
-            self.query.append(', '.join(cols))
+            self.query.append(', '.join([str(col) for col in cols]))
         return self
 
     def where(self, where_statement_operation):
@@ -202,8 +217,8 @@ class TableNice(object):
             self.query.append(statement)
         else:
             raise Exception('WHERE without SELECT')
-
-        self.query.append(where_statement_operation.operation)
+        for op in where_statement_operation.operation:
+            self.query.append(op)
 
         return self
 
@@ -303,7 +318,7 @@ class TableNice(object):
     def __str__(self):
         if not self.check_statement('SELECT'):
             query = 'SELECT * FROM ' + self.table_name + ' LIMIT  20'
-            self.columns_selected = self.columns
+            self.columns_selected = [col.name for col in self.columns]
         else:
             query = ' '.join(self.query)
         try:
@@ -316,18 +331,18 @@ class TableNice(object):
 
         # Iterate to check largest char in each row
         if len(list_of_rows) != 0:
-            for col_val, col_name in zip(list_of_rows[0], self.columns_selected):
+            for col_val, col_name in zip(list_of_rows[0], [col.name for col in self.columns_selected]):
                 len_name = len(str(col_name))
                 len_val = len(str(col_val))
                 list_of_widths.append(len_name if len_name > len_val else len_val)
         else:
-            for col_name in self.columns_selected:
+            for col_name in [col.name for col in self.columns_selected]:
                 len_name = len(str(col_name))
                 list_of_widths.append(len_name)
         # Justfy the elements
         separator = self.justfy_list([['' for _ in self.columns_selected]], list_of_widths, '-', '+')
         output_rows = self.justfy_list(list_of_rows, list_of_widths, ' ')
-        output_header = self.justfy_list([self.columns_selected], list_of_widths, ' ')
+        output_header = self.justfy_list([[col.name for col in self.columns_selected]], list_of_widths, ' ')
 
         # Build the structure of elements
         output_rows.insert(0, separator[0])

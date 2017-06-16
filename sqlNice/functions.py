@@ -19,7 +19,9 @@ def sum(column):
     if not handle_table_info(column):
         raise Exception("Not a ColumnNice object")
 
-    return 'SUM(' + str(column) + ')'
+    column.set_function('SUM(' + str(column) + ')')
+
+    return column
 
 
 def max(column):
@@ -31,7 +33,9 @@ def max(column):
     if not handle_table_info(column):
         raise Exception("Not a ColumnNice object")
 
-    return 'MAX(' + str(column) + ')'
+    column.set_function('MAX(' + str(column) + ')')
+
+    return column
 
 
 def min(column):
@@ -43,7 +47,9 @@ def min(column):
     if not handle_table_info(column):
         raise Exception("Not a ColumnNice object")
 
-    return 'MIN(' + str(column) + ')'
+    column.set_function('MIN(' + str(column) + ')')
+
+    return column
 
 
 def count(column):
@@ -55,4 +61,6 @@ def count(column):
     if not handle_table_info(column):
         raise Exception("Not a ColumnNice object")
 
-    return 'COUNT(' + str(column) + ')'
+    column.set_function('COUNT(' + str(column) + ')')
+
+    return column

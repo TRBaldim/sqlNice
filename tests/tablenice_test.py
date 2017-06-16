@@ -109,7 +109,7 @@ class TestTableNice(unittest.TestCase):
 
     def test_where_clause_and(self):
         db_name = 'first_db.db'
-        query_result = ['SELECT', 'ID, AMOUNT', 'FROM', 'TABLE_1', 'WHERE', 'AMOUNT >= 1000 AND AMOUNT <= 5000']
+        query_result = ['SELECT', 'ID, AMOUNT', 'FROM', 'TABLE_1', 'WHERE', 'AMOUNT >= 1000', 'AND', 'AMOUNT <= 5000']
         table_name_1 = 'TABLE_1'
         table_list = ['TABLE_1', 'TABLE_2']
 
@@ -122,7 +122,7 @@ class TestTableNice(unittest.TestCase):
 
     def test_where_clause_or(self):
         db_name = 'first_db.db'
-        query_result = ['SELECT', 'ID, AMOUNT', 'FROM', 'TABLE_1', 'WHERE', 'AMOUNT >= 1000 OR AMOUNT <= 5000']
+        query_result = ['SELECT', 'ID, AMOUNT', 'FROM', 'TABLE_1', 'WHERE', 'AMOUNT >= 1000', 'OR',  'AMOUNT <= 5000']
         table_name_1 = 'TABLE_1'
         table_list = ['TABLE_1', 'TABLE_2']
 
