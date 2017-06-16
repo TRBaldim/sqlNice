@@ -177,6 +177,7 @@ class TableNice(object):
             # self.columns_selected = [col for col in cols if col in self.columns]
             self.columns_selected = self.get_col_obj_by_name(cols)
             self.query.append(', '.join([str(item) for item in self.columns_selected]))
+            map(lambda col: col.restore_default_name(), self.columns_selected)
         self.query.append('FROM')
         self.query.append(self.table_name)
         return self
@@ -219,6 +220,35 @@ class TableNice(object):
             raise Exception('WHERE without SELECT')
         for op in where_statement_operation.operation:
             self.query.append(op)
+
+        where_statement_operation.operation = []
+
+        return self
+
+    def having(self, having_statement_operation):
+        """
+        :param having_statement_operation:
+        :return:
+        """
+        statement = 'HAVING'
+
+        if self.check_statement(statement):
+            raise Exception('HAVING Statement already in use. \n'
+                            'Use a clear query method to run the statement')
+
+        self.query_statements.append(statement)
+
+        # Checking if has SELECT before Where
+        if self.check_statement('SELECT') and self.check_statement('GROUP BY'):
+            self.query.append(statement)
+        else:
+            raise Exception('HAVING without SELECT or WHERE')
+
+        for op in having_statement_operation.operation:
+            self.query.append(op)
+            break
+
+        having_statement_operation.operation = []
 
         return self
 

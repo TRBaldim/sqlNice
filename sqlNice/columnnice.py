@@ -148,5 +148,8 @@ class ColumnNice(object):
         return self
 
     def set_function(self, function_string):
-        self.name = function_string
+        #self.name = function_string
         self.representation = function_string
+
+    def restore_default_name(self):
+        self.representation = self.name

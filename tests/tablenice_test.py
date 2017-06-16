@@ -238,5 +238,18 @@ class TestTableNice(unittest.TestCase):
 
         self.assertEqual(query, query_result)
 
+    def test_having(self):
+        db_name = 'first_db.db'
+        table_list = ['TABLE_1', 'TABLE_2']
+        build_databases(db_name, table_list)
+
+        test_obj = sqlnice.SqlNice(db_name)
+        table_obj = test_obj['TABLE_1']
+        query = table_obj.select(sum(table_obj['AMOUNT'])).group_by('NAME').having(max(table_obj['AMOUNT']) > 5000).query
+
+        query_result = ['SELECT', 'SUM(AMOUNT)', 'FROM', 'TABLE_1', 'GROUP BY', 'NAME', 'HAVING', 'MAX(AMOUNT) > 5000']
+
+        self.assertEqual(query, query_result)
+
 if __name__ == '__main__':
     unittest.main()
